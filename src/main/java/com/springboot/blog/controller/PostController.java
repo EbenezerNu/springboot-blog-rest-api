@@ -43,4 +43,14 @@ public class PostController {
         log.info("Inside fetchPost by id-->");
         return new ResponseEntity<>(postService.getPostById(id), HttpStatus.OK);
     }
+
+    // update a post by id api
+    @PutMapping("/{id}")
+    public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto, @PathVariable(name = "id") Long id){
+        log.info("Inside updatePost by id -->", id);
+        return new ResponseEntity<>(postService.updatePost(id, postDto), HttpStatus.OK);
+    }
+
+
+
 }

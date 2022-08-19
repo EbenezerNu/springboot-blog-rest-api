@@ -5,6 +5,7 @@ import com.springboot.blog.exception.ResourceNotFound;
 import com.springboot.blog.payload.PostDto;
 import com.springboot.blog.repository.PostRepository;
 import com.springboot.blog.service.PostService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
@@ -50,6 +52,26 @@ public class PostServiceImpl implements PostService {
         return results;
     }
 
+    @Override
+    public PostDto updatePost(Long id, PostDto postDto) {
+         Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Post", "id", id));
+         if(postDto.getTitle() != null && postDto.getTitle().trim() != "") {
+             int count = postRepository.countPostsByTitle(postDto.getTitle().trim());
+             log.info("Title check --> {}", count);
+             if(count == 0) {
+                 post.setTitle(postDto.getTitle().trim());
+             }
+         }
+         if(postDto.getContent() != null && postDto.getContent().trim() != "")
+             post.setContent(postDto.getContent().trim());
+
+         if(postDto.getDescription() != null && postDto.getDescription().trim() != "")
+             post.setDescription(postDto.getDescription().trim());
+
+         postRepository.save(post);
+        return mapToDto(post);
+    }
+
     // method to map Post object to PostDto Object
     public PostDto mapToDto(Post post){
         PostDto results = new PostDto();
@@ -69,5 +91,7 @@ public class PostServiceImpl implements PostService {
         results.setContent(postDto.getContent());
         return results;
     }
+
+
 
 }
