@@ -3,10 +3,12 @@ package com.springboot.blog.controller;
 import com.springboot.blog.entity.Post;
 import com.springboot.blog.payload.PostDto;
 import com.springboot.blog.service.PostService;
+import com.springboot.blog.utils.Pagination;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,9 +34,11 @@ public class PostController {
 
     // fetching posts api
     @GetMapping
-    public ResponseEntity<List<PostDto>> fetchPosts(){
+    public ResponseEntity<Pagination<PostDto>> fetchPosts(
+            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize ){
         log.info("Inside fetchPosts -->");
-        return new ResponseEntity<>(postService.getAllPosts(), HttpStatus.OK);
+        return new ResponseEntity<>(postService.getAllPosts(pageNo, pageSize), HttpStatus.OK);
     }
 
     // fetching post by id api
@@ -49,6 +53,14 @@ public class PostController {
     public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto, @PathVariable(name = "id") Long id){
         log.info("Inside updatePost by id -->", id);
         return new ResponseEntity<>(postService.updatePost(id, postDto), HttpStatus.OK);
+    }
+
+    // delete a post by id api
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deletePost(@PathVariable(name = "id") Long id){
+        log.info("Inside deletePost by id -->", id);
+        postService.deletePost(id);
+        return new ResponseEntity<>("Post of Id '" + id + "' successfully deleted!", HttpStatus.OK);
     }
 
 

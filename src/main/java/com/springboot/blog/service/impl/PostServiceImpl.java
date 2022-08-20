@@ -5,12 +5,15 @@ import com.springboot.blog.exception.ResourceNotFound;
 import com.springboot.blog.payload.PostDto;
 import com.springboot.blog.repository.PostRepository;
 import com.springboot.blog.service.PostService;
+import com.springboot.blog.utils.Pagination;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -34,15 +37,34 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> getAllPosts() {
-        List<Post> posts = postRepository.findAll();
+    public Pagination<PostDto> getAllPosts(int pageNo, int pageSize){
+        Pageable  pageable = PageRequest.of(pageNo, pageSize);
+        Page<Post> posts = postRepository.findAll(pageable);
+        Boolean isLast = (posts.getNumber() * posts.getSize()) >= posts.getNumberOfElements();
+        if(isLast)
+            throw new ResourceNotFound("Posts", "Page", (long) pageNo);
+
+        return getPaginationFromDto(posts);
+    }
+
+    private Pagination getPaginationFromDto(Page <Post> data){
         List<PostDto> results = new ArrayList<>();
-        for (Post post: posts) {
+        for (Post post: data.getContent()) {
             // convert entity to dto and append to list
             results.add(mapToDto(post));
         }
-        return results;
+        Pagination<PostDto> response = new Pagination<>();
+        response.setContent(results);
+        response.setPageNo(data.getNumber());
+        response.setPageSize(data.getSize());
+        response.setTotalPages(data.getTotalPages());
+        response.setTotalElements(data.getTotalElements());
+        Boolean isLast = ((data.getNumber() + 1) * data.getSize()) >= data.getNumberOfElements();
+        response.setLast(isLast);
+
+        return response;
     }
+
 
     @Override
     public PostDto getPostById(Long id) {
@@ -92,6 +114,9 @@ public class PostServiceImpl implements PostService {
         return results;
     }
 
-
-
+    @Override
+    public void deletePost(Long id) {
+        Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Post", "id", id));
+        postRepository.delete(post);
+    }
 }

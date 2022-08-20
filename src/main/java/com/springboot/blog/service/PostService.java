@@ -1,7 +1,7 @@
 package com.springboot.blog.service;
 
-import com.springboot.blog.entity.Post;
 import com.springboot.blog.payload.PostDto;
+import com.springboot.blog.utils.Pagination;
 
 import java.util.List;
 
@@ -10,10 +10,11 @@ public interface PostService {
 
     PostDto createPost(PostDto postDto);
 
-    List<PostDto> getAllPosts();
+    Pagination<PostDto> getAllPosts(int pageNo, int pageSize);
 
     PostDto getPostById(Long id);
 
     PostDto updatePost(Long id, PostDto postDto);
 
+    void deletePost(Long id);
 }
