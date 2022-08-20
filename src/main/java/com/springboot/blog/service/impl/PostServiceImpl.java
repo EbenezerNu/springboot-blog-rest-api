@@ -5,11 +5,14 @@ import com.springboot.blog.exception.ResourceNotFound;
 import com.springboot.blog.payload.PostDto;
 import com.springboot.blog.repository.PostRepository;
 import com.springboot.blog.service.PostService;
+import com.springboot.blog.utils.GetPagination;
 import com.springboot.blog.utils.Pagination;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,8 +24,11 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
 
-    public PostServiceImpl(PostRepository postRepository) {
+    private GetPagination<Post, PostDto> getPagination;
+
+    public PostServiceImpl(PostRepository postRepository, GetPagination<Post, PostDto> getPagination) {
         this.postRepository = postRepository;
+        this.getPagination = getPagination;
     }
 
     @Override
@@ -37,34 +43,21 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Pagination<PostDto> getAllPosts(int pageNo, int pageSize){
-        Pageable  pageable = PageRequest.of(pageNo, pageSize);
+    public Pagination<PostDto> getAllPosts(int pageNo, int pageSize, String sortBy){
+        Pageable  pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
         Page<Post> posts = postRepository.findAll(pageable);
-        Boolean isLast = (posts.getNumber() * posts.getSize()) >= posts.getNumberOfElements();
+        Boolean isLast = posts.getNumber() >= posts.getTotalPages();
         if(isLast)
             throw new ResourceNotFound("Posts", "Page", (long) pageNo);
 
-        return getPaginationFromDto(posts);
-    }
-
-    private Pagination getPaginationFromDto(Page <Post> data){
         List<PostDto> results = new ArrayList<>();
-        for (Post post: data.getContent()) {
+        for (Post post: posts.getContent()) {
             // convert entity to dto and append to list
             results.add(mapToDto(post));
         }
-        Pagination<PostDto> response = new Pagination<>();
-        response.setContent(results);
-        response.setPageNo(data.getNumber());
-        response.setPageSize(data.getSize());
-        response.setTotalPages(data.getTotalPages());
-        response.setTotalElements(data.getTotalElements());
-        Boolean isLast = ((data.getNumber() + 1) * data.getSize()) >= data.getNumberOfElements();
-        response.setLast(isLast);
-
+        Pagination<PostDto> response = getPagination.fetch(posts, results);
         return response;
     }
-
 
     @Override
     public PostDto getPostById(Long id) {

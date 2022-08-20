@@ -10,7 +10,7 @@ public interface PostService {
 
     PostDto createPost(PostDto postDto);
 
-    Pagination<PostDto> getAllPosts(int pageNo, int pageSize);
+    Pagination<PostDto> getAllPosts(int pageNo, int pageSize, String sortBy);
 
     PostDto getPostById(Long id);
 
