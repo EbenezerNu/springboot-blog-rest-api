@@ -4,11 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 
 import java.util.List;
 
 @Service
-public class GetPagination<T, G> {
+public class PaginationUtil<T, G> {
 
     public Pagination <G> fetch(Page<T> data, List<G> results) {
 
@@ -21,5 +22,15 @@ public class GetPagination<T, G> {
         response.setLast(data.isLast());
 
         return response;
+    }
+
+    public Params fetchParams(int pageNo, int pageSize, String sortBy, String sortDir){
+       Params params = new Params();
+        params.setPageNo(pageNo);
+        params.setPageSize(pageSize);
+        params.setSortBy(sortBy);
+        params.setSortDir(sortDir);
+
+        return params;
     }
 }

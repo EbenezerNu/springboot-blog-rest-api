@@ -3,12 +3,13 @@ package com.springboot.blog.service.impl;
 import com.springboot.blog.entity.Post;
 import com.springboot.blog.exception.ResourceNotFound;
 import com.springboot.blog.payload.PostDto;
+import com.springboot.blog.repository.CommentRepository;
 import com.springboot.blog.repository.PostRepository;
 import com.springboot.blog.service.PostService;
-import com.springboot.blog.utils.GetPagination;
+import com.springboot.blog.utils.PaginationUtil;
 import com.springboot.blog.utils.Pagination;
+import com.springboot.blog.utils.Params;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,11 +25,14 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
 
-    private GetPagination<Post, PostDto> getPagination;
+    private final CommentRepository commentRepository;
 
-    public PostServiceImpl(PostRepository postRepository, GetPagination<Post, PostDto> getPagination) {
+    private PaginationUtil<Post, PostDto> paginationUtil;
+
+    public PostServiceImpl(PostRepository postRepository, CommentRepository commentRepository, PaginationUtil<Post, PostDto> paginationUtil) {
         this.postRepository = postRepository;
-        this.getPagination = getPagination;
+        this.commentRepository = commentRepository;
+        this.paginationUtil = paginationUtil;
     }
 
     @Override
@@ -42,21 +46,15 @@ public class PostServiceImpl implements PostService {
         return responseDto;
     }
 
-    @Override
-    public Pagination<PostDto> getAllPosts(int pageNo, int pageSize, String sortBy){
-        Pageable  pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
-        Page<Post> posts = postRepository.findAll(pageable);
-        Boolean isLast = posts.getNumber() >= posts.getTotalPages();
-        if(isLast)
-            throw new ResourceNotFound("Posts", "Page", (long) pageNo);
 
-        List<PostDto> results = new ArrayList<>();
-        for (Post post: posts.getContent()) {
-            // convert entity to dto and append to list
-            results.add(mapToDto(post));
-        }
-        Pagination<PostDto> response = getPagination.fetch(posts, results);
-        return response;
+    @Override
+    public Pagination<PostDto> getAllPosts(Params params){
+        Sort sort = params.getSortDir().equalsIgnoreCase(Sort.Direction.ASC.toString()) ? Sort.by(params.getSortBy()).ascending()
+                : Sort.by(params.getSortBy()).descending();
+        Pageable pageable = PageRequest.of(params.getPageNo(), params.getPageSize(), sort);
+        Page<Post> posts = postRepository.findAll(pageable);
+        // checks page number and return pagination
+        return validateAndReturnPaginationCommentDto(posts, params);
     }
 
     @Override
@@ -87,6 +85,15 @@ public class PostServiceImpl implements PostService {
         return mapToDto(post);
     }
 
+    @Override
+    public void deletePost(Long id) {
+        Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Post", "id", id));
+        postRepository.delete(post);
+        commentRepository.deleteCommentsByPostId(id);
+    }
+
+
+
     // method to map Post object to PostDto Object
     public PostDto mapToDto(Post post){
         PostDto results = new PostDto();
@@ -107,9 +114,23 @@ public class PostServiceImpl implements PostService {
         return results;
     }
 
-    @Override
-    public void deletePost(Long id) {
-        Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Post", "id", id));
-        postRepository.delete(post);
+
+
+    // checks page number and return pagination
+    private Pagination<PostDto> validateAndReturnPaginationCommentDto(Page<Post> posts, Params params) {
+        Boolean isLast = posts.getNumber() >= posts.getTotalPages();
+        if(isLast)
+            throw new ResourceNotFound("Posts", "Page", (long) params.getPageNo());
+
+        List<PostDto> results = new ArrayList<>();
+        for (Post post: posts.getContent()) {
+            // convert entity to dto and append to list
+            results.add(mapToDto(post));
+        }
+        Pagination<PostDto> response = paginationUtil.fetch(posts, results);
+        return response;
     }
+
+
+
 }

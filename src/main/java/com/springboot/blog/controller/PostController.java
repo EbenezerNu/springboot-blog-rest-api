@@ -3,15 +3,16 @@ package com.springboot.blog.controller;
 import com.springboot.blog.entity.Post;
 import com.springboot.blog.payload.PostDto;
 import com.springboot.blog.service.PostService;
+import com.springboot.blog.utils.AppConstants;
 import com.springboot.blog.utils.Pagination;
+import com.springboot.blog.utils.PaginationUtil;
+import com.springboot.blog.utils.Params;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @Slf4j
@@ -21,8 +22,11 @@ public class PostController {
     @Autowired
     private PostService postService;
 
-    public PostController(PostService postService) {
+    private PaginationUtil<Post, PostDto> paginationUtil;
+
+    public PostController(PostService postService, PaginationUtil<Post, PostDto> paginationUtil) {
         this.postService = postService;
+        this.paginationUtil = paginationUtil;
     }
 
     // create post api
@@ -35,11 +39,13 @@ public class PostController {
     // fetching posts api
     @GetMapping
     public ResponseEntity<Pagination<PostDto>> fetchPosts(
-            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
-            @RequestParam(value = "sortBy", defaultValue = "id", required = false) String sortBy){
+            @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir){
         log.info("Inside fetchPosts -->");
-        return new ResponseEntity<>(postService.getAllPosts(pageNo, pageSize, sortBy), HttpStatus.OK);
+        Params params = paginationUtil.fetchParams(pageNo, pageSize, sortBy, sortDir);
+        return new ResponseEntity<>(postService.getAllPosts(params), HttpStatus.OK);
     }
 
     // fetching post by id api
