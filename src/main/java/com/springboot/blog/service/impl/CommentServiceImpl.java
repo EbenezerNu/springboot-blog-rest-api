@@ -10,6 +10,7 @@ import com.springboot.blog.service.CommentService;
 import com.springboot.blog.utils.Pagination;
 import com.springboot.blog.utils.PaginationUtil;
 import com.springboot.blog.utils.Params;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,10 +29,13 @@ public class CommentServiceImpl implements CommentService {
 
     private PaginationUtil<Comment, CommentDto> paginationUtil;
 
-    public CommentServiceImpl(CommentRepository commentRepository, PostRepository postRepository, PaginationUtil<Comment, CommentDto> paginationUtil) {
+    private ModelMapper mapper;
+
+    public CommentServiceImpl(CommentRepository commentRepository, PostRepository postRepository, PaginationUtil<Comment, CommentDto> paginationUtil, ModelMapper mapper) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
         this.paginationUtil = paginationUtil;
+        this.mapper = mapper;
     }
 
     @Override
@@ -93,21 +97,13 @@ public class CommentServiceImpl implements CommentService {
 
     // method to map Post object to PCommentostDto Object
     public CommentDto mapToDto(Comment comment){
-        CommentDto results = new CommentDto();
-        results.setId(comment.getId());
-        results.setContent(comment.getContent());
-        results.setPostId(comment.getPostId());
-        results.setUserId(comment.getUserId());
+        CommentDto results = mapper.map(comment, CommentDto.class);
         return results;
     }
 
     // method to map PostDto object to Post Object
     public Comment mapToEntity(CommentDto commentDto){
-        Comment results = new Comment();
-        results.setId(commentDto.getId());
-        results.setContent(commentDto.getContent());
-        results.setPostId(commentDto.getPostId());
-        results.setUserId(commentDto.getUserId());
+        Comment results = mapper.map(commentDto, Comment.class);
         return results;
     }
 

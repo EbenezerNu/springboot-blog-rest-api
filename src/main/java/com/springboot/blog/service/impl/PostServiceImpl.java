@@ -10,6 +10,7 @@ import com.springboot.blog.utils.PaginationUtil;
 import com.springboot.blog.utils.Pagination;
 import com.springboot.blog.utils.Params;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,10 +30,13 @@ public class PostServiceImpl implements PostService {
 
     private PaginationUtil<Post, PostDto> paginationUtil;
 
-    public PostServiceImpl(PostRepository postRepository, CommentRepository commentRepository, PaginationUtil<Post, PostDto> paginationUtil) {
+    private ModelMapper mapper;
+
+    public PostServiceImpl(PostRepository postRepository, CommentRepository commentRepository, PaginationUtil<Post, PostDto> paginationUtil, ModelMapper mapper) {
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
         this.paginationUtil = paginationUtil;
+        this.mapper = mapper;
     }
 
     @Override
@@ -96,21 +100,13 @@ public class PostServiceImpl implements PostService {
 
     // method to map Post object to PostDto Object
     public PostDto mapToDto(Post post){
-        PostDto results = new PostDto();
-        results.setId(post.getId());
-        results.setTitle(post.getTitle());
-        results.setDescription(post.getDescription());
-        results.setContent(post.getContent());
+        PostDto results = mapper.map(post, PostDto.class);
         return results;
     }
 
     // method to map PostDto object to Post Object
     public Post mapToEntity(PostDto postDto){
-        Post results = new Post();
-        results.setId(postDto.getId());
-        results.setTitle(postDto.getTitle());
-        results.setDescription(postDto.getDescription());
-        results.setContent(postDto.getContent());
+        Post results = mapper.map(postDto, Post.class);
         return results;
     }
 
