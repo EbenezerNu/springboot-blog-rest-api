@@ -5,9 +5,10 @@ import com.springboot.blog.exception.ResourceNotFound;
 import com.springboot.blog.payload.PostDto;
 import com.springboot.blog.repository.CommentRepository;
 import com.springboot.blog.repository.PostRepository;
+import com.springboot.blog.service.CommentService;
 import com.springboot.blog.service.PostService;
-import com.springboot.blog.utils.PaginationUtil;
 import com.springboot.blog.utils.Pagination;
+import com.springboot.blog.utils.PaginationUtil;
 import com.springboot.blog.utils.Params;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -28,13 +29,16 @@ public class PostServiceImpl implements PostService {
 
     private final CommentRepository commentRepository;
 
+    private CommentService commentService;
+
     private PaginationUtil<Post, PostDto> paginationUtil;
 
     private ModelMapper mapper;
 
-    public PostServiceImpl(PostRepository postRepository, CommentRepository commentRepository, PaginationUtil<Post, PostDto> paginationUtil, ModelMapper mapper) {
+    public PostServiceImpl(PostRepository postRepository, CommentRepository commentRepository, CommentService commentService, PaginationUtil<Post, PostDto> paginationUtil, ModelMapper mapper) {
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
+        this.commentService = commentService;
         this.paginationUtil = paginationUtil;
         this.mapper = mapper;
     }
@@ -66,6 +70,7 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Post", "id", id));
         // convert entity to dto
         PostDto results = mapToDto(post);
+        results.setComments(commentService.getPostComments(results.getId()));
         return results;
     }
 
@@ -121,7 +126,9 @@ public class PostServiceImpl implements PostService {
         List<PostDto> results = new ArrayList<>();
         for (Post post: posts.getContent()) {
             // convert entity to dto and append to list
-            results.add(mapToDto(post));
+            var postDto = mapToDto(post);
+            postDto.setComments(commentService.getPostComments(postDto.getId()));
+            results.add(postDto);
         }
         Pagination<PostDto> response = paginationUtil.fetch(posts, results);
         return response;

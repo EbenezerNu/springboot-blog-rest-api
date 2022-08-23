@@ -4,6 +4,7 @@ import com.springboot.blog.entity.Comment;
 import com.springboot.blog.entity.Post;
 import com.springboot.blog.exception.ResourceNotFound;
 import com.springboot.blog.payload.CommentDto;
+import com.springboot.blog.payload.PostCommentDto;
 import com.springboot.blog.repository.CommentRepository;
 import com.springboot.blog.repository.PostRepository;
 import com.springboot.blog.service.CommentService;
@@ -18,7 +19,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -61,6 +64,19 @@ public class CommentServiceImpl implements CommentService {
         return validateAndReturnPaginationCommentDto(page, params);
     }
 
+    @Override
+    public Set<PostCommentDto> getPostComments(long postId){
+        postRepository.findById(postId).orElseThrow(()-> new ResourceNotFound("Post", "id", postId));
+
+        Set<Comment> comments = commentRepository.findCommentsByPostId(postId);
+        Set<PostCommentDto> results = new HashSet<>();
+        comments.forEach(comment -> {
+            results.add(mapper.map(comment, PostCommentDto.class));
+        });
+        // Check and parses response per parameters
+        return results;
+    }
+
 
     @Override
     public CommentDto saveComment (CommentDto commentDto){
@@ -95,13 +111,13 @@ public class CommentServiceImpl implements CommentService {
 
 
 
-    // method to map Post object to PCommentostDto Object
+    // method to map Comment object to CommentDto Object
     public CommentDto mapToDto(Comment comment){
         CommentDto results = mapper.map(comment, CommentDto.class);
         return results;
     }
 
-    // method to map PostDto object to Post Object
+    // method to map CommentDto object to Comment Object
     public Comment mapToEntity(CommentDto commentDto){
         Comment results = mapper.map(commentDto, Comment.class);
         return results;
