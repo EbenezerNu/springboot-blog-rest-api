@@ -14,12 +14,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @Slf4j
 @RequestMapping("/api/posts")
 public class PostController {
 
-    @Autowired
     private PostService postService;
 
     private PaginationUtil<Post, PostDto> paginationUtil;
@@ -31,7 +32,7 @@ public class PostController {
 
     // create post api
     @PostMapping
-    public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto){
+    public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto){
         log.info("Inside createPost -->");
         return new ResponseEntity<>(postService.createPost(postDto), HttpStatus.CREATED);
     }

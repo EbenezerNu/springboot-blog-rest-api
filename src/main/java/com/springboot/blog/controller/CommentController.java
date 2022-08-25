@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @Slf4j
 @RestController
 //@RequestMapping("/api/posts/{id}/comments")
@@ -53,7 +55,7 @@ public class CommentController {
 
 
     @PostMapping
-    public ResponseEntity<CommentDto> saveComment(@RequestBody CommentDto commentDto){
+    public ResponseEntity<CommentDto> saveComment(@Valid @RequestBody CommentDto commentDto){
         log.info("Inside saveComment -->");
         return new ResponseEntity<>(commentService.saveComment(commentDto), HttpStatus.CREATED);
     }
