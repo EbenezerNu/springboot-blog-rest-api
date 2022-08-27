@@ -17,8 +17,8 @@ import javax.validation.Valid;
 
 @Slf4j
 @RestController
-//@RequestMapping("/api/posts/{id}/comments")
-@RequestMapping("/api/comments")
+@RequestMapping("/api/posts/{postId}/comments/")
+//@RequestMapping("/api/comments")
 public class CommentController {
 
     private CommentService commentService;
@@ -30,7 +30,7 @@ public class CommentController {
         this.paginationUtil = paginationUtil;
     }
 
-    @GetMapping
+    @GetMapping("all")
     public ResponseEntity<Pagination<CommentDto>> fetchAllComments(
             @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
             @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
@@ -41,7 +41,7 @@ public class CommentController {
         return new ResponseEntity<>(commentService.getAllComments(params), HttpStatus.OK);
     }
 
-    @GetMapping("/posts/{postId}")
+    @GetMapping
     public ResponseEntity<Pagination<CommentDto>> fetchPostComments(
             @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
             @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
@@ -60,17 +60,18 @@ public class CommentController {
         return new ResponseEntity<>(commentService.saveComment(commentDto), HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteComment(@PathVariable(name = "id") long id){
+    @DeleteMapping("{id}")
+    public ResponseEntity<String> deleteComment(@PathVariable(name = "postId") long postId, @PathVariable(name = "id") long id){
         log.info("Inside deleteComment -->");
-        commentService.deleteComment(id);
+        commentService.deleteComment(postId, id);
         return new ResponseEntity<>("Successfully deleted comment of 'id' "+ id, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CommentDto> updateComment(@PathVariable(name = "id") long id, @RequestBody CommentDto commentDto){
+    public ResponseEntity<CommentDto> updateComment(@PathVariable(name = "postId") long postId, @PathVariable(name = "id") long id, @RequestBody CommentDto commentDto){
         log.info("Inside updateComment -->");
-        return new ResponseEntity<>(commentService.updateComment(id, commentDto), HttpStatus.CREATED);
+        commentDto.setId(id);
+        return new ResponseEntity<>(commentService.updateComment(postId, commentDto), HttpStatus.CREATED);
     }
 
 

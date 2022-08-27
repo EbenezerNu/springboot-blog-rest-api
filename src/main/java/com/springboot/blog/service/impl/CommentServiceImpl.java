@@ -92,20 +92,27 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void deleteComment(long id){
-        Comment comment = commentRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Comment", "id", id));
-        commentRepository.delete(comment);
+    public void deleteComment(long postId, long id){
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFound("Post", "id", postId));
+        if(post != null){
+            Comment comment = commentRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Comment", "id", id));
+            commentRepository.delete(comment);
+        }
     }
 
     @Override
-    public CommentDto updateComment(long id, CommentDto commentDto){
-        Comment comment = commentRepository.findById(id).orElseThrow(()-> new ResourceNotFound("Comment", "id", id));
-        if(!commentDto.getContent().trim().equalsIgnoreCase("") && commentDto.getContent() != null) {
-            comment.setContent(commentDto.getContent().trim());
-            commentRepository.save(comment);
+    public CommentDto updateComment(long postId, CommentDto commentDto){
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFound("Post", "id", postId));
+        if(post != null) {
+            Comment comment = commentRepository.findById(commentDto.getId()).orElseThrow(() -> new ResourceNotFound("Comment", "id", commentDto.getId()));
+            if (!commentDto.getContent().trim().equalsIgnoreCase("") && commentDto.getContent() != null) {
+                comment.setContent(commentDto.getContent().trim());
+                commentRepository.save(comment);
+            }
+            CommentDto response = mapToDto(comment);
+            return response;
         }
-        CommentDto response = mapToDto(comment);
-        return response;
+        return null;
     }
 
 
