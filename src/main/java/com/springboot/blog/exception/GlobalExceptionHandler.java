@@ -25,6 +25,13 @@ public class GlobalExceptionHandler{
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
 
+
+    @ExceptionHandler(ResourceIsEmpty.class)
+    public ResponseEntity<ErrorDetails> handleResourceIsEmptyException (ResourceIsEmpty exception, WebRequest webRequest){
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(), webRequest.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+    }
+
     // handle ArgumentNotValid exceptions
 
 /*    @Override

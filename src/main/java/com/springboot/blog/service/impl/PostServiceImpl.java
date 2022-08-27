@@ -1,6 +1,7 @@
 package com.springboot.blog.service.impl;
 
 import com.springboot.blog.entity.Post;
+import com.springboot.blog.exception.ResourceIsEmpty;
 import com.springboot.blog.exception.ResourceNotFound;
 import com.springboot.blog.payload.PostDto;
 import com.springboot.blog.repository.CommentRepository;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -47,10 +49,10 @@ public class PostServiceImpl implements PostService {
     public PostDto createPost(PostDto postDto) {
         // convert dto to entity
         Post post = mapToEntity(postDto);
+        post.setComments(new HashSet<>());
         Post savedPost = postRepository.save(post);
         // convert entity to dto
         PostDto responseDto = mapToDto(savedPost);
-
         return responseDto;
     }
 
@@ -62,7 +64,7 @@ public class PostServiceImpl implements PostService {
         Pageable pageable = PageRequest.of(params.getPageNo(), params.getPageSize(), sort);
         Page<Post> posts = postRepository.findAll(pageable);
         // checks page number and return pagination
-        return validateAndReturnPaginationCommentDto(posts, params);
+        return validateAndReturnPaginationPostDto(posts, params);
     }
 
     @Override
@@ -118,7 +120,11 @@ public class PostServiceImpl implements PostService {
 
 
     // checks page number and return pagination
-    private Pagination<PostDto> validateAndReturnPaginationCommentDto(Page<Post> posts, Params params) {
+    private Pagination<PostDto> validateAndReturnPaginationPostDto(Page<Post> posts, Params params) {
+
+        if((posts.getContent().size() < 1) && (posts.getNumber() == 0))
+            throw new ResourceIsEmpty("Post", null);
+
         Boolean isLast = posts.getNumber() >= posts.getTotalPages();
         if(isLast)
             throw new ResourceNotFound("Posts", "Page", (long) params.getPageNo());

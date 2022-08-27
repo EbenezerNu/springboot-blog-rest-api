@@ -2,6 +2,7 @@ package com.springboot.blog.service.impl;
 
 import com.springboot.blog.entity.Comment;
 import com.springboot.blog.entity.Post;
+import com.springboot.blog.exception.ResourceIsEmpty;
 import com.springboot.blog.exception.ResourceNotFound;
 import com.springboot.blog.payload.CommentDto;
 import com.springboot.blog.payload.PostCommentDto;
@@ -79,12 +80,13 @@ public class CommentServiceImpl implements CommentService {
 
 
     @Override
-    public CommentDto saveComment (CommentDto commentDto){
-        Post checkPost = postRepository.findById(commentDto.getPostId()).orElseThrow(() -> new ResourceNotFound("Post", "id", commentDto.getPostId()));
+    public CommentDto saveComment (Long postId, CommentDto commentDto){
+        Post checkPost = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFound("Post", "id", postId));
         CommentDto response = null;
         if(checkPost != null){
             commentDto.setId(null);
             Comment comment = mapToEntity(commentDto);
+            comment.setPost(checkPost);
             Comment savedComment = commentRepository.save(comment);
             response = mapToDto(savedComment);
         }
@@ -105,8 +107,8 @@ public class CommentServiceImpl implements CommentService {
         Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFound("Post", "id", postId));
         if(post != null) {
             Comment comment = commentRepository.findById(commentDto.getId()).orElseThrow(() -> new ResourceNotFound("Comment", "id", commentDto.getId()));
-            if (!commentDto.getContent().trim().equalsIgnoreCase("") && commentDto.getContent() != null) {
-                comment.setContent(commentDto.getContent().trim());
+            if (!commentDto.getBody().trim().equalsIgnoreCase("") && commentDto.getBody() != null) {
+                comment.setBody(commentDto.getBody().trim());
                 commentRepository.save(comment);
             }
             CommentDto response = mapToDto(comment);
@@ -133,6 +135,10 @@ public class CommentServiceImpl implements CommentService {
 
     // Validates Page Number and return pagination
     private Pagination<CommentDto> validateAndReturnPaginationCommentDto(Page<Comment> page, Params params) {
+
+        if((page.getContent().size() < 1) && (page.getNumber() == 0))
+            throw new ResourceIsEmpty("Comment", "Post");
+
         if(page.getTotalPages() <= params.getPageNo())
             throw new ResourceNotFound("Comments", "Page Number", (long) params.getPageNo());
 

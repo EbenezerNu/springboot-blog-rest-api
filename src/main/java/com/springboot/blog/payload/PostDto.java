@@ -2,6 +2,7 @@ package com.springboot.blog.payload;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Set;
@@ -19,7 +20,7 @@ public class PostDto {
     @Size(min = 10, message = "Post description should have at least 10 characters")
     private String description;
 
-    @NotNull
+    @NotEmpty(message = "Content should not be null or empty")
     private String content;
 
     private Set<PostCommentDto> comments;

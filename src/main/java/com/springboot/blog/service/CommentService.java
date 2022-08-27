@@ -11,7 +11,7 @@ public interface CommentService {
 
     Pagination<CommentDto> getAllComments(Params params);
 
-    CommentDto saveComment(CommentDto commentDto);
+    CommentDto saveComment(Long postId, CommentDto commentDto);
 
     Pagination<CommentDto> getPostComments(long postId, Params params);
 

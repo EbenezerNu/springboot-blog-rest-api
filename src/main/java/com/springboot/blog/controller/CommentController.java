@@ -18,7 +18,6 @@ import javax.validation.Valid;
 @Slf4j
 @RestController
 @RequestMapping("/api/posts/{postId}/comments/")
-//@RequestMapping("/api/comments")
 public class CommentController {
 
     private CommentService commentService;
@@ -55,16 +54,16 @@ public class CommentController {
 
 
     @PostMapping
-    public ResponseEntity<CommentDto> saveComment(@Valid @RequestBody CommentDto commentDto){
+    public ResponseEntity<CommentDto> saveComment(@PathVariable(name = "postId") long postId, @Valid @RequestBody CommentDto commentDto){
         log.info("Inside saveComment -->");
-        return new ResponseEntity<>(commentService.saveComment(commentDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(commentService.saveComment(postId, commentDto), HttpStatus.CREATED);
     }
 
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteComment(@PathVariable(name = "postId") long postId, @PathVariable(name = "id") long id){
         log.info("Inside deleteComment -->");
         commentService.deleteComment(postId, id);
-        return new ResponseEntity<>("Successfully deleted comment of 'id' "+ id, HttpStatus.CREATED);
+        return new ResponseEntity<>("Successfully deleted comment of 'id' "+ id + " in Post of id " + postId, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
