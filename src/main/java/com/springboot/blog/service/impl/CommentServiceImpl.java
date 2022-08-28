@@ -5,7 +5,6 @@ import com.springboot.blog.entity.Post;
 import com.springboot.blog.exception.ResourceIsEmpty;
 import com.springboot.blog.exception.ResourceNotFound;
 import com.springboot.blog.payload.CommentDto;
-import com.springboot.blog.payload.PostCommentDto;
 import com.springboot.blog.repository.CommentRepository;
 import com.springboot.blog.repository.PostRepository;
 import com.springboot.blog.service.CommentService;
@@ -66,13 +65,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Set<PostCommentDto> getPostComments(long postId){
+    public List<CommentDto> getPostComments(long postId){
         postRepository.findById(postId).orElseThrow(()-> new ResourceNotFound("Post", "id", postId));
 
-        Set<Comment> comments = commentRepository.findCommentsByPostId(postId);
-        Set<PostCommentDto> results = new HashSet<>();
+        List<Comment> comments = (List<Comment>) commentRepository.findCommentsByPostId(postId);
+        List<CommentDto> results = new ArrayList<>();
         comments.forEach(comment -> {
-            results.add(mapper.map(comment, PostCommentDto.class));
+            results.add(mapper.map(comment, CommentDto.class));
         });
         // Check and parses response per parameters
         return results;

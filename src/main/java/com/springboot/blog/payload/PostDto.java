@@ -1,10 +1,14 @@
 package com.springboot.blog.payload;
 
+import com.springboot.blog.entity.Comment;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -23,5 +27,5 @@ public class PostDto {
     @NotEmpty(message = "Content should not be null or empty")
     private String content;
 
-    private Set<PostCommentDto> comments;
+    private List<CommentDto> comments = new ArrayList<>();
 }

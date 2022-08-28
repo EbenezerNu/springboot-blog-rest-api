@@ -49,7 +49,7 @@ public class PostServiceImpl implements PostService {
     public PostDto createPost(PostDto postDto) {
         // convert dto to entity
         Post post = mapToEntity(postDto);
-        post.setComments(new HashSet<>());
+        post.setComments(new ArrayList<>());
         Post savedPost = postRepository.save(post);
         // convert entity to dto
         PostDto responseDto = mapToDto(savedPost);
@@ -70,9 +70,10 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDto getPostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Post", "id", id));
+//        log.info("Post : {}", post.toString());
         // convert entity to dto
         PostDto results = mapToDto(post);
-        results.setComments(commentService.getPostComments(results.getId()));
+//        results.setComments(commentService.getPostComments(results.getId()));
         return results;
     }
 
@@ -133,7 +134,7 @@ public class PostServiceImpl implements PostService {
         for (Post post: posts.getContent()) {
             // convert entity to dto and append to list
             var postDto = mapToDto(post);
-            postDto.setComments(commentService.getPostComments(postDto.getId()));
+//            postDto.setComments(commentService.getPostComments(postDto.getId()));
             results.add(postDto);
         }
         Pagination<PostDto> response = paginationUtil.fetch(posts, results);
