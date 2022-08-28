@@ -17,7 +17,7 @@ import javax.validation.Valid;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/posts/{postId}/comments/")
+@RequestMapping("/api/posts/{postId}/comments")
 public class CommentController {
 
     private CommentService commentService;
@@ -29,7 +29,7 @@ public class CommentController {
         this.paginationUtil = paginationUtil;
     }
 
-    @GetMapping("all")
+    @GetMapping("/all")
     public ResponseEntity<Pagination<CommentDto>> fetchAllComments(
             @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
             @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
@@ -59,7 +59,7 @@ public class CommentController {
         return new ResponseEntity<>(commentService.saveComment(postId, commentDto), HttpStatus.CREATED);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteComment(@PathVariable(name = "postId") long postId, @PathVariable(name = "id") long id){
         log.info("Inside deleteComment -->");
         commentService.deleteComment(postId, id);
