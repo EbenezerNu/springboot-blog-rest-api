@@ -32,7 +32,7 @@ public class PostController {
     }
 
     // create post api
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping
     public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto){
         log.info("Inside createPost -->");
