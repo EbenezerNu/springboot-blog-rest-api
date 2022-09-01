@@ -40,6 +40,7 @@ public class PostController {
     }
 
     // fetching posts api
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
     @GetMapping
     public ResponseEntity<Pagination<PostDto>> fetchPosts(
             @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
@@ -52,6 +53,7 @@ public class PostController {
     }
 
     // fetching post by id api
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
     @GetMapping("/{id}")
     public ResponseEntity<PostDto> fetchPost(@PathVariable(name = "id") Long id){
         log.info("Inside fetchPost by id-->");

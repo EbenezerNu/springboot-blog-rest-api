@@ -30,6 +30,7 @@ public class CommentController {
         this.paginationUtil = paginationUtil;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
     @GetMapping("/all")
     public ResponseEntity<Pagination<CommentDto>> fetchAllComments(
             @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
@@ -41,6 +42,7 @@ public class CommentController {
         return new ResponseEntity<>(commentService.getAllComments(params), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
     @GetMapping
     public ResponseEntity<Pagination<CommentDto>> fetchPostComments(
             @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
