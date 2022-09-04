@@ -24,11 +24,4 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping
-    public ResponseEntity<UserDto> saveUser(@RequestBody UserDto userDto){
-        log.info("inside save User --> \n {}", userDto.toString());
-        return new ResponseEntity<>(userService.createUser(userDto), HttpStatus.CREATED);
-    }
-
-
 }

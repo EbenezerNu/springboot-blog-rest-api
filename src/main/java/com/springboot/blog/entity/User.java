@@ -17,9 +17,14 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(name = "name")
+    @NotNull
+    @Size(min = 3, message = "Name should be at least 3 characters")
+    private String name;
+
     @Column(name = "username")
     @NotNull
-    @Size(min = 5, message = "Username should be at least 5 characters")
+    @Size(min = 3, message = "Username should be at least 3 characters")
     private String username;
 
     @Column(name = "email")

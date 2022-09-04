@@ -1,6 +1,7 @@
 package com.springboot.blog.service.impl;
 
 import com.springboot.blog.entity.User;
+import com.springboot.blog.payload.SignUpDto;
 import com.springboot.blog.payload.UserDto;
 import com.springboot.blog.repository.UserRepository;
 import com.springboot.blog.service.UserService;
@@ -20,8 +21,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto createUser(UserDto userDto) {
-        User user = mapper.map(userDto, User.class);
+    public UserDto createUser(SignUpDto signUpDto) {
+        User user = mapper.map(signUpDto, User.class);
         User newUser = userRepository.save(user);
         return mapper.map(newUser, UserDto.class);
     }
