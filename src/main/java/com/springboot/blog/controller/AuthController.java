@@ -1,9 +1,11 @@
 package com.springboot.blog.controller;
 
+import com.springboot.blog.entity.Role;
 import com.springboot.blog.entity.User;
 import com.springboot.blog.payload.LoginDto;
 import com.springboot.blog.payload.SignUpDto;
 import com.springboot.blog.payload.UserDto;
+import com.springboot.blog.repository.RoleRepository;
 import com.springboot.blog.repository.UserRepository;
 import com.springboot.blog.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -19,18 +21,31 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.lang.reflect.Array;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/auth")
+@Valid
 public class AuthController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
     private UserService userService;
 
     @PostMapping("/signin")
@@ -50,7 +65,18 @@ public class AuthController {
         if(userRepository.existsByEmail(signUpDto.getEmail()))
             return new ResponseEntity<>("Email already exist!", HttpStatus.BAD_REQUEST);
 
-        return new ResponseEntity<>(userService.createUser(signUpDto), HttpStatus.CREATED);
+        User user = new User();
+        user.setEmail(signUpDto.getEmail());
+        user.setName(signUpDto.getName());
+        user.setUsername(signUpDto.getUsername());
+        user.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
+
+        Role roles = roleRepository.findByName("ROLE_USER").get();
+
+        user.setRoles(Collections.singleton(roles));
+        userRepository.save(user);
+
+        return new ResponseEntity<>("User successfully created!", HttpStatus.CREATED);
     }
 
 }

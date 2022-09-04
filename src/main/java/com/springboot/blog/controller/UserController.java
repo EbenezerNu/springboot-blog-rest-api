@@ -1,5 +1,6 @@
 package com.springboot.blog.controller;
 
+import com.springboot.blog.payload.SignUpDto;
 import com.springboot.blog.payload.UserDto;
 import com.springboot.blog.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -23,5 +24,12 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
+
+    @PostMapping
+    public ResponseEntity<UserDto> saveUser(@RequestBody SignUpDto signUpDto){
+        log.info("inside save User --> \n {}", signUpDto.toString());
+        return new ResponseEntity<>(userService.createUser(signUpDto), HttpStatus.CREATED);
+    }
+
 
 }
