@@ -59,6 +59,12 @@ public class GlobalExceptionHandler{
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(BlogAPIException.class)
+    public ResponseEntity<ErrorDetails> handleBlogAPIException (BlogAPIException exception, WebRequest webRequest){
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(), webRequest.getDescription(false));
+        return new ResponseEntity<>(errorDetails, exception.getHttpStatus());
+    }
+
     //handle global exceptions
 
     @ExceptionHandler(Exception.class)
