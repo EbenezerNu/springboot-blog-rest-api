@@ -1,9 +1,9 @@
 package com.springboot.blog.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.springboot.blog.exception.BlogAPIException;
+import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -44,5 +44,28 @@ public class JwtTokenProvider {
 
     //Validate Token
 
-
+    public boolean validateToken(String token){
+        try{
+            Jwts.parser()
+                    .setSigningKey(jwtSecretKey)
+                    .parseClaimsJwt(token)
+                    .getBody();
+            return true;
+        }
+        catch(SignatureException ex){
+            throw new BlogAPIException("Invalid JWT signature", HttpStatus.BAD_REQUEST);
+        }
+        catch(MalformedJwtException ex){
+            throw new BlogAPIException("Invalid JWT Token", HttpStatus.BAD_REQUEST);
+        }
+        catch(ExpiredJwtException ex){
+            throw new BlogAPIException("Expired JWT Token", HttpStatus.BAD_REQUEST);
+        }
+        catch(UnsupportedJwtException ex){
+            throw new BlogAPIException("Unsupported JWT Token", HttpStatus.BAD_REQUEST);
+        }
+        catch(IllegalArgumentException ex){
+            throw new BlogAPIException("JWT claims string is empty", HttpStatus.BAD_REQUEST);
+        }
+    }
 }
