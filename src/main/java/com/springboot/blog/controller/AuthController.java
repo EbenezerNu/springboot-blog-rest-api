@@ -2,6 +2,7 @@ package com.springboot.blog.controller;
 
 import com.springboot.blog.entity.Role;
 import com.springboot.blog.entity.User;
+import com.springboot.blog.payload.JwtAuthResponse;
 import com.springboot.blog.payload.LoginDto;
 import com.springboot.blog.payload.SignUpDto;
 import com.springboot.blog.payload.UserDto;
@@ -51,14 +52,14 @@ public class AuthController {
     private JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/signin")
-    public ResponseEntity<JWTAuthResponse> loginUser(@RequestBody LoginDto loginDto){
+    public ResponseEntity<JwtAuthResponse> loginUser(@RequestBody LoginDto loginDto){
         log.info("Inside LoginUser -->");
         Authentication authentication =  authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getUsernameOrEmail(), loginDto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String token = jwtTokenProvider.generateToken(authentication);
 
-        return ResponseEntity.ok(new JWTAuthResponse(token));
+        return ResponseEntity.ok(new JwtAuthResponse(token));
     }
 
     @PostMapping("/signup")

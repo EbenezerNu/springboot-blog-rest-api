@@ -3,12 +3,12 @@ package com.springboot.blog.payload;
 import lombok.Data;
 
 @Data
-public class JWTAuthDto {
+public class JwtAuthResponse {
 
     private String accessToken;
     private String tokenType = "Bearer";
 
-    public JWTAuthDto(String accessToken) {
+    public JwtAuthResponse(String accessToken) {
         this.accessToken = accessToken;
     }
 }
