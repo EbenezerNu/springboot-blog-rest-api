@@ -18,7 +18,7 @@ import javax.validation.Valid;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/posts/{postId}/comments")
+@RequestMapping("/api")
 public class CommentController {
 
     private CommentService commentService;
@@ -31,7 +31,7 @@ public class CommentController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
-    @GetMapping("/all")
+    @GetMapping("/v1/posts/{postId}/comments/all")
     public ResponseEntity<Pagination<CommentDto>> fetchAllComments(
             @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
             @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
@@ -43,7 +43,7 @@ public class CommentController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
-    @GetMapping
+    @GetMapping("/v1/posts/{postId}/comments")
     public ResponseEntity<Pagination<CommentDto>> fetchPostComments(
             @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
             @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
@@ -57,14 +57,14 @@ public class CommentController {
 
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PostMapping
+    @PostMapping("/v1/posts/{postId}/comments")
     public ResponseEntity<CommentDto> saveComment(@PathVariable(name = "postId") long postId, @Valid @RequestBody CommentDto commentDto){
         log.info("Inside saveComment -->");
         return new ResponseEntity<>(commentService.saveComment(postId, commentDto), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/v1/posts/{postId}/comments/{id}")
     public ResponseEntity<String> deleteComment(@PathVariable(name = "postId") long postId, @PathVariable(name = "id") long id){
         log.info("Inside deleteComment -->");
         commentService.deleteComment(postId, id);
@@ -72,7 +72,7 @@ public class CommentController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{id}")
+    @PutMapping("/v1/posts/{postId}/comments/{id}")
     public ResponseEntity<CommentDto> updateComment(@PathVariable(name = "postId") long postId, @PathVariable(name = "id") long id, @RequestBody CommentDto commentDto){
         log.info("Inside updateComment -->");
         commentDto.setId(id);

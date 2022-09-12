@@ -19,7 +19,7 @@ import javax.validation.Valid;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/posts")
+@RequestMapping("/api")
 public class PostController {
 
     private PostService postService;
@@ -33,7 +33,7 @@ public class PostController {
 
     // create post api
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PostMapping
+    @PostMapping("/v1/posts")
     public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto){
         log.info("Inside createPost -->");
         return new ResponseEntity<>(postService.createPost(postDto), HttpStatus.CREATED);
@@ -41,7 +41,7 @@ public class PostController {
 
     // fetching posts api
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
-    @GetMapping
+    @GetMapping("/v1/posts")
     public ResponseEntity<Pagination<PostDto>> fetchPosts(
             @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
             @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
@@ -54,7 +54,7 @@ public class PostController {
 
     // fetching post by id api
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
-    @GetMapping("/{id}")
+    @GetMapping("/v1/posts/{id}")
     public ResponseEntity<PostDto> fetchPost(@PathVariable(name = "id") Long id){
         log.info("Inside fetchPost by id-->");
         return new ResponseEntity<>(postService.getPostById(id), HttpStatus.OK);
@@ -62,7 +62,7 @@ public class PostController {
 
     // update a post by id api
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{id}")
+    @PutMapping("/v1/posts/{id}")
     public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto, @PathVariable(name = "id") Long id){
         log.info("Inside updatePost by id -->", id);
         return new ResponseEntity<>(postService.updatePost(id, postDto), HttpStatus.OK);
@@ -70,7 +70,7 @@ public class PostController {
 
     // delete a post by id api
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/v1/posts/{id}")
     public ResponseEntity<String> deletePost(@PathVariable(name = "id") Long id){
         log.info("Inside deletePost by id -->", id);
         postService.deletePost(id);

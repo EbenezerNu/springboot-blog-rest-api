@@ -3,11 +3,12 @@ package com.springboot.blog.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import com.springboot.blog.security.JwtTokenProvider;
+import com.springboot.blog.security.CustomUserDetailsService;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -17,8 +18,10 @@ import java.io.IOException;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
+    @Autowired
     private CustomUserDetailsService userDetailsService;
 
     @Override
@@ -48,7 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private String getJWTFromRequest(HttpServletRequest request){
         String requestToken = request.getHeader("Authorization");
         if(StringUtils.hasText(requestToken) && requestToken.startsWith("Bearer ")){
-            return requestToken.substring(7);
+            return requestToken.substring(7,requestToken.length());
         }
         return null;
     }
