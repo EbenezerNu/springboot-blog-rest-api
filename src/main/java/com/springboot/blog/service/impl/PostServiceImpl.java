@@ -3,6 +3,8 @@ package com.springboot.blog.service.impl;
 import com.springboot.blog.entity.Post;
 import com.springboot.blog.exception.ResourceIsEmpty;
 import com.springboot.blog.exception.ResourceNotFound;
+import com.springboot.blog.payload.NestedCommentDto;
+import com.springboot.blog.payload.NestedPostDto;
 import com.springboot.blog.payload.PostDto;
 import com.springboot.blog.repository.CommentRepository;
 import com.springboot.blog.repository.PostRepository;
@@ -20,7 +22,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -102,6 +103,18 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Post", "id", id));
         postRepository.delete(post);
         commentRepository.deleteCommentsByPostId(id);
+    }
+
+    @Override
+    public NestedPostDto getPostByIdAsTweet(Long id) {
+        PostDto post = getPostById(id);
+        NestedPostDto response = mapper.map(post, NestedPostDto.class);
+        if(response.getComments().size() > 0){
+            response.getComments().forEach(nestedCommentDto -> {
+                nestedCommentDto.setReplies(commentService.getCommentsReplies(nestedCommentDto.getId()));
+            });
+        }
+        return response;
     }
 
 

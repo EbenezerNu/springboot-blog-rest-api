@@ -56,8 +56,16 @@ public class PostController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
     @GetMapping("/v1/posts/{id}")
     public ResponseEntity<PostDto> fetchPost(@PathVariable(name = "id") Long id){
-        log.info("Inside fetchPost by id-->");
+        log.info("Inside fetchPost by id--> {}", id);
         return new ResponseEntity<>(postService.getPostById(id), HttpStatus.OK);
+    }
+
+    // fetching post by id api
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
+    @GetMapping("/v2/posts/{id}")
+    public ResponseEntity<PostDto> fetchPostTweet(@PathVariable(name = "id") Long id){
+        log.info("Inside fetchPostTweet by id--> {}", id);
+        return new ResponseEntity<>(postService.getPostByIdAsTweet(id), HttpStatus.OK);
     }
 
     // update a post by id api

@@ -1,5 +1,6 @@
 package com.springboot.blog.service;
 
+import com.springboot.blog.payload.NestedPostDto;
 import com.springboot.blog.payload.PostDto;
 import com.springboot.blog.utils.Pagination;
 import com.springboot.blog.utils.Params;
@@ -18,4 +19,6 @@ public interface PostService {
     PostDto updatePost(Long id, PostDto postDto);
 
     void deletePost(Long id);
+
+    NestedPostDto getPostByIdAsTweet(Long id);
 }

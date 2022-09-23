@@ -77,6 +77,18 @@ public class CommentServiceImpl implements CommentService {
         return results;
     }
 
+    @Override
+    public List<CommentDto> getCommentsReplies(long commentId) {
+        commentRepository.findById(commentId).orElseThrow(()-> new ResourceNotFound("Comment", "id", commentId));
+
+        List<Comment> comments = commentRepository.findCommentsByCommentId(commentId);
+        List<CommentDto> results = new ArrayList<>();
+        comments.forEach(comment -> {
+            results.add(mapper.map(comment, CommentDto.class));
+        });
+        return results;
+    }
+
 
     @Override
     public CommentDto saveComment (Long postId, CommentDto commentDto){

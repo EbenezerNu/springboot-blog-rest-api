@@ -1,11 +1,14 @@
 package com.springboot.blog.payload;
 
 import lombok.Data;
+import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class CommentDto {
@@ -24,4 +27,6 @@ public class CommentDto {
     @Size(min = 2, message = "Comment content should have at least 2 characters")
     private String body;
 
+    @Nullable
+    private Long commentId;
 }
