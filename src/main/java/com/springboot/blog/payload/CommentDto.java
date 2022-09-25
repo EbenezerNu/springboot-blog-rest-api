@@ -27,6 +27,4 @@ public class CommentDto {
     @Size(min = 2, message = "Comment content should have at least 2 characters")
     private String body;
 
-    @Nullable
-    private Long commentId;
 }

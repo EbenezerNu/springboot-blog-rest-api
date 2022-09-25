@@ -1,6 +1,7 @@
 package com.springboot.blog.controller;
 
 import com.springboot.blog.entity.Post;
+import com.springboot.blog.payload.NestedPostDto;
 import com.springboot.blog.payload.PostDto;
 import com.springboot.blog.service.PostService;
 import com.springboot.blog.utils.AppConstants;
@@ -63,7 +64,7 @@ public class PostController {
     // fetching post by id api
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
     @GetMapping("/v2/posts/{id}")
-    public ResponseEntity<PostDto> fetchPostTweet(@PathVariable(name = "id") Long id){
+    public ResponseEntity<NestedPostDto> fetchPostTweet(@PathVariable(name = "id") Long id){
         log.info("Inside fetchPostTweet by id--> {}", id);
         return new ResponseEntity<>(postService.getPostByIdAsTweet(id), HttpStatus.OK);
     }

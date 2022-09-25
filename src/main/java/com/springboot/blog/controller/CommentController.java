@@ -2,6 +2,7 @@ package com.springboot.blog.controller;
 
 import com.springboot.blog.entity.Comment;
 import com.springboot.blog.payload.CommentDto;
+import com.springboot.blog.payload.CommentReplyDto;
 import com.springboot.blog.payload.PostDto;
 import com.springboot.blog.service.CommentService;
 import com.springboot.blog.utils.AppConstants;
@@ -61,6 +62,13 @@ public class CommentController {
     public ResponseEntity<CommentDto> saveComment(@PathVariable(name = "postId") long postId, @Valid @RequestBody CommentDto commentDto){
         log.info("Inside saveComment -->");
         return new ResponseEntity<>(commentService.saveComment(postId, commentDto), HttpStatus.CREATED);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PostMapping("/v1/posts/{postId}/comments/{commentId}")
+    public ResponseEntity<CommentReplyDto> saveCommentReply(@PathVariable(name = "postId") long postId, @PathVariable(name = "commentId") long commentId, @Valid @RequestBody CommentDto commentDto){
+        log.info("Inside saveComment -->");
+        return new ResponseEntity<>(commentService.saveCommentReply(postId, commentId, commentDto), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

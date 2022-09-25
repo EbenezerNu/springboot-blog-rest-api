@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
+import javax.validation.constraints.Null;
 
 @Data
 @AllArgsConstructor
@@ -19,9 +20,11 @@ public class Comment {
     private String name;
     private String email;
     private String body;
+
     @Nullable
     private Long commentId;
 
+    @Nullable
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = true)
     private Post post;

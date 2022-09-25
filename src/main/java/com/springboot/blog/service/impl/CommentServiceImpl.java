@@ -2,9 +2,12 @@ package com.springboot.blog.service.impl;
 
 import com.springboot.blog.entity.Comment;
 import com.springboot.blog.entity.Post;
+import com.springboot.blog.exception.BlogAPIException;
 import com.springboot.blog.exception.ResourceIsEmpty;
 import com.springboot.blog.exception.ResourceNotFound;
 import com.springboot.blog.payload.CommentDto;
+import com.springboot.blog.payload.CommentReplyDto;
+import com.springboot.blog.payload.PostDto;
 import com.springboot.blog.repository.CommentRepository;
 import com.springboot.blog.repository.PostRepository;
 import com.springboot.blog.service.CommentService;
@@ -16,12 +19,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -78,13 +79,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentDto> getCommentsReplies(long commentId) {
+    public List<CommentReplyDto> getCommentsReplies(long commentId) {
         commentRepository.findById(commentId).orElseThrow(()-> new ResourceNotFound("Comment", "id", commentId));
 
         List<Comment> comments = commentRepository.findCommentsByCommentId(commentId);
-        List<CommentDto> results = new ArrayList<>();
+        List<CommentReplyDto> results = new ArrayList<>();
         comments.forEach(comment -> {
-            results.add(mapper.map(comment, CommentDto.class));
+            results.add(mapper.map(comment, CommentReplyDto.class));
         });
         return results;
     }
@@ -128,7 +129,28 @@ public class CommentServiceImpl implements CommentService {
         return null;
     }
 
-
+    @Override
+    public CommentReplyDto saveCommentReply(long postId, long commentId, CommentDto commentDto) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new ResourceNotFound("Comment", "Id", commentId));
+        if(comment != null){
+            long commentPostId = commentRepository.findPostIdByCommentId(commentId);
+            Post post = postRepository.findById(commentPostId).orElseThrow(() -> new ResourceNotFound("Post", "Id", commentPostId));
+            CommentReplyDto response = null;
+            if(postId == commentPostId && post != null){
+                if(commentDto != null){
+                    commentDto.setId(null);
+                    Comment reply = mapToEntity(commentDto);
+                    reply.setCommentId(commentId);
+                    Comment savedComment = commentRepository.save(reply);
+                    response = mapper.map(savedComment, CommentReplyDto.class);
+                }
+                return response;
+            }else{
+                throw new BlogAPIException("Given commentId does not belong to the specified postId", HttpStatus.BAD_REQUEST);
+            }
+        }
+        return null;
+    }
 
 
     // method to map Comment object to CommentDto Object

@@ -7,11 +7,9 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
-public class NestedCommentDto {
+public class CommentReplyDto {
 
     private Long id;
     
@@ -27,6 +25,5 @@ public class NestedCommentDto {
     @Size(min = 2, message = "Comment content should have at least 2 characters")
     private String body;
 
-    @Nullable
-    List<CommentReplyDto> replies = new ArrayList<>();
+    private Long commentId;
 }
