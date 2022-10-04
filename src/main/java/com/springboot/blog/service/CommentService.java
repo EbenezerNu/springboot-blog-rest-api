@@ -2,6 +2,7 @@ package com.springboot.blog.service;
 
 import com.springboot.blog.payload.CommentDto;
 import com.springboot.blog.payload.CommentReplyDto;
+import com.springboot.blog.payload.NestedCommentDto;
 import com.springboot.blog.utils.Pagination;
 import com.springboot.blog.utils.Params;
 
@@ -15,6 +16,8 @@ public interface CommentService {
     CommentDto saveComment(Long postId, CommentDto commentDto);
 
     Pagination<CommentDto> getPostComments(long postId, Params params);
+
+    Pagination<NestedCommentDto> addCommentReplies(Pagination<CommentDto> comments);
 
     List<CommentDto> getPostComments(long postId);
 

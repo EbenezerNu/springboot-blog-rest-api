@@ -7,7 +7,7 @@ import com.springboot.blog.exception.ResourceIsEmpty;
 import com.springboot.blog.exception.ResourceNotFound;
 import com.springboot.blog.payload.CommentDto;
 import com.springboot.blog.payload.CommentReplyDto;
-import com.springboot.blog.payload.PostDto;
+import com.springboot.blog.payload.NestedCommentDto;
 import com.springboot.blog.repository.CommentRepository;
 import com.springboot.blog.repository.PostRepository;
 import com.springboot.blog.service.CommentService;
@@ -22,7 +22,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -152,6 +153,24 @@ public class CommentServiceImpl implements CommentService {
         return null;
     }
 
+    @Override
+    public Pagination<NestedCommentDto> addCommentReplies(Pagination<CommentDto> comments) {
+        List<NestedCommentDto> data = new ArrayList<>();
+        comments.getContent().forEach(commentDto -> {
+            NestedCommentDto newComment = mapper.map(commentDto, NestedCommentDto.class);
+            newComment.setReplies(getCommentsReplies(newComment.getId()));
+            data.add(newComment);
+        });
+        Pagination<NestedCommentDto> response = new Pagination<>();
+        response.setTotalElements(comments.getTotalElements());
+        response.setTotalPages(comments.getTotalPages());
+        response.setPageSize(comments.getPageSize());
+        response.setPageNo(comments.getPageNo());
+        response.setContent(data);
+        response.setLast(comments.isLast());
+
+        return response;
+    }
 
     // method to map Comment object to CommentDto Object
     public CommentDto mapToDto(Comment comment){
