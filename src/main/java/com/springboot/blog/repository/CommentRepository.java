@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -25,5 +26,5 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findCommentsByCommentId(long commentId);
 
     @Query(value = "SELECT c.post_id from comments c where c.id =:commentId", nativeQuery = true)
-    long findPostIdByCommentId(long commentId);
+    Optional<Long> findPostIdByCommentId(long commentId);
 }

@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -137,10 +138,10 @@ public class CommentServiceImpl implements CommentService {
         log.info("Inside saveCommentReply");
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new ResourceNotFound("Comment", "Id", commentId));
         if(comment != null){
-            long commentPostId = commentRepository.findPostIdByCommentId(commentId);
-            Post post = postRepository.findById(commentPostId).orElseThrow(() -> new ResourceNotFound("Post", "Id", commentPostId));
+            Optional<Long> commentPostId = commentRepository.findPostIdByCommentId(commentId);
+            postRepository.findById(postId).orElseThrow(() -> new ResourceNotFound("Post", "Id", postId));
             CommentReplyDto response = null;
-            if(postId == commentPostId && post != null){
+            if(commentPostId.get() == postId || comment.getCommentId() != null){
                 if(commentDto != null){
                     commentDto.setId(null);
                     Comment reply = mapToEntity(commentDto);
