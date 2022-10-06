@@ -21,7 +21,7 @@ public interface CommentService {
 
     List<CommentDto> getPostComments(long postId);
 
-    List<CommentReplyDto> getCommentsReplies(long commentId);
+    List<NestedCommentDto> getCommentsReplies(long commentId);
 
     void deleteComment(long postId, long id);
 

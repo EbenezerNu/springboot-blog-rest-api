@@ -80,13 +80,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentReplyDto> getCommentsReplies(long commentId) {
+    public List<NestedCommentDto> getCommentsReplies(long commentId) {
         commentRepository.findById(commentId).orElseThrow(()-> new ResourceNotFound("Comment", "id", commentId));
 
         List<Comment> comments = commentRepository.findCommentsByCommentId(commentId);
-        List<CommentReplyDto> results = new ArrayList<>();
+        List<NestedCommentDto> results = new ArrayList<>();
         comments.forEach(comment -> {
-            results.add(mapper.map(comment, CommentReplyDto.class));
+            results.add(mapper.map(comment, NestedCommentDto.class));
         });
         return results;
     }
@@ -158,7 +158,8 @@ public class CommentServiceImpl implements CommentService {
         List<NestedCommentDto> data = new ArrayList<>();
         comments.getContent().forEach(commentDto -> {
             NestedCommentDto newComment = mapper.map(commentDto, NestedCommentDto.class);
-            newComment.setReplies(getCommentsReplies(newComment.getId()));
+            List<NestedCommentDto> replies = getCommentsReplies(newComment.getId());
+            newComment.setReplies(getInnerReplies(replies));
             data.add(newComment);
         });
         Pagination<NestedCommentDto> response = new Pagination<>();
@@ -170,6 +171,15 @@ public class CommentServiceImpl implements CommentService {
         response.setLast(comments.isLast());
 
         return response;
+    }
+
+    private List<NestedCommentDto> getInnerReplies(List<NestedCommentDto> replies) {
+        for (NestedCommentDto nestedCommentDto : replies) {
+            List<NestedCommentDto> innerReplies = getCommentsReplies(nestedCommentDto.getId());
+            if(innerReplies.size() > 0)
+                nestedCommentDto.setReplies(getInnerReplies(innerReplies));
+        }
+        return replies;
     }
 
     // method to map Comment object to CommentDto Object

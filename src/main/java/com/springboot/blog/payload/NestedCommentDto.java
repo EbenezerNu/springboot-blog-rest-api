@@ -28,5 +28,10 @@ public class NestedCommentDto {
     private String body;
 
     @Nullable
-    List<CommentReplyDto> replies = new ArrayList<>();
+    private Long commentId;
+
+    @Nullable
+    List<NestedCommentDto> replies = new ArrayList<>();
+
+
 }
