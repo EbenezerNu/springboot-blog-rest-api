@@ -139,9 +139,10 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new ResourceNotFound("Comment", "Id", commentId));
         if(comment != null){
             Optional<Long> commentPostId = commentRepository.findPostIdByCommentId(commentId);
-            postRepository.findById(postId).orElseThrow(() -> new ResourceNotFound("Post", "Id", postId));
+            if(commentPostId.isPresent())
+                postRepository.findById(postId).orElseThrow(() -> new ResourceNotFound("Post", "Id", postId));
             CommentReplyDto response = null;
-            if(commentPostId.get() == postId || comment.getCommentId() != null){
+            if((commentPostId.isPresent() && commentPostId.get() == postId) || comment.getCommentId() != null){
                 if(commentDto != null){
                     commentDto.setId(null);
                     Comment reply = mapToEntity(commentDto);
