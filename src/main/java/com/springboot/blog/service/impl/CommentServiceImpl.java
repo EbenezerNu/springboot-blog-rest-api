@@ -14,6 +14,7 @@ import com.springboot.blog.service.CommentService;
 import com.springboot.blog.utils.Pagination;
 import com.springboot.blog.utils.PaginationUtil;
 import com.springboot.blog.utils.Params;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class CommentServiceImpl implements CommentService {
 
@@ -132,6 +134,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentReplyDto saveCommentReply(long postId, long commentId, CommentDto commentDto) {
+        log.info("Inside saveCommentReply");
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new ResourceNotFound("Comment", "Id", commentId));
         if(comment != null){
             long commentPostId = commentRepository.findPostIdByCommentId(commentId);
