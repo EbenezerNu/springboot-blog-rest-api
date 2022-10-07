@@ -9,5 +9,6 @@ public class Params {
     private int pageSize;
     private String sortBy;
     private String sortDir;
+    private String search;
 
 }

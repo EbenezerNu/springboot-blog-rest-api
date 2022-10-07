@@ -47,9 +47,10 @@ public class PostController {
             @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
             @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
             @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+            @RequestParam(value = "search", defaultValue = "", required = false) String search,
             @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir){
         log.info("Inside fetchPosts -->");
-        Params params = paginationUtil.fetchParams(pageNo, pageSize, sortBy, sortDir);
+        Params params = paginationUtil.fetchParams(pageNo, pageSize, sortBy, sortDir, search);
         return new ResponseEntity<>(postService.getAllPosts(params), HttpStatus.OK);
     }
 
