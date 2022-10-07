@@ -63,7 +63,12 @@ public class PostServiceImpl implements PostService {
         Sort sort = params.getSortDir().equalsIgnoreCase(Sort.Direction.ASC.toString()) ? Sort.by(params.getSortBy()).ascending()
                 : Sort.by(params.getSortBy()).descending();
         Pageable pageable = PageRequest.of(params.getPageNo(), params.getPageSize(), sort);
-        Page<Post> posts = postRepository.findAll(pageable);
+        Page<Post> posts;
+        if(params.getSearch() != null && params.getSearch().trim() != ""){
+            posts = postRepository.findAllByCommentsContainingOrContentContainingOrDescriptionContaining(pageable, params.getSearch()) ;
+        }else{
+            posts = postRepository.findAll(pageable);
+        }
         // checks page number and return pagination
         return validateAndReturnPaginationPostDto(posts, params);
     }
