@@ -62,7 +62,7 @@ public class PostController {
         return new ResponseEntity<>(postService.getPostById(id), HttpStatus.OK);
     }
 
-    // fetching post by id api
+    // fetching post by id api, as tweet (showing replies recursively)
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
     @GetMapping("/v2/posts/{id}")
     public ResponseEntity<NestedPostDto> fetchPostTweet(@PathVariable(name = "id") Long id){
