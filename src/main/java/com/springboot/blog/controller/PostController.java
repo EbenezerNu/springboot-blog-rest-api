@@ -40,7 +40,7 @@ public class PostController {
         return new ResponseEntity<>(postService.createPost(postDto), HttpStatus.CREATED);
     }
 
-    // fetching posts api
+    // fetching posts api, added search to the posts
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
     @GetMapping("/v1/posts")
     public ResponseEntity<Pagination<PostDto>> fetchPosts(
