@@ -65,7 +65,7 @@ public class PostServiceImpl implements PostService {
         Pageable pageable = PageRequest.of(params.getPageNo(), params.getPageSize(), sort);
         Page<Post> posts;
         if(params.getSearch() != null && params.getSearch().trim() != ""){
-            posts = postRepository.findAllByCommentsContainingOrContentContainingOrDescriptionContaining(pageable, params.getSearch()) ;
+            posts = postRepository.findALlBySearch(pageable, params.getSearch()) ;
         }else{
             posts = postRepository.findAll(pageable);
         }
