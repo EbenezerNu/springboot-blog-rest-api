@@ -6,7 +6,9 @@ import com.springboot.blog.payload.UserDto;
 import com.springboot.blog.repository.UserRepository;
 import com.springboot.blog.service.UserService;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -27,10 +29,10 @@ public class UserServiceImpl implements UserService {
         return mapper.map(newUser, UserDto.class);
     }
 
-
-
-
-
+    @Override
+    public ResponseEntity changePassword(MultiValueMap<String, String> params) {
+        return null;
+    }
 
 
 }
