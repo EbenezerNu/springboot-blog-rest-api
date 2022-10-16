@@ -49,6 +49,15 @@ public class UserServiceImpl implements UserService {
             return new ResponseEntity("User Account does not exist", HttpStatus.BAD_REQUEST);
         }
 
+        if(params.getFirst("old password") != null && !params.getFirst("old password").equals("")){
+            oldPassword = params.getFirst("old password");
+        }else if(params.getFirst("password") != null && !params.getFirst("password").equals("")){
+            oldPassword = params.getFirst("password");
+        }else{
+            return new ResponseEntity("User Account Password not provided!!", HttpStatus.BAD_REQUEST);
+        }
+
+
         return null;
     }
 
