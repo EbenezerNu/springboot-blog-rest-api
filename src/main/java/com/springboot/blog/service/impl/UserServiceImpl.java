@@ -6,9 +6,12 @@ import com.springboot.blog.payload.UserDto;
 import com.springboot.blog.repository.UserRepository;
 import com.springboot.blog.service.UserService;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
+
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -31,6 +34,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity changePassword(MultiValueMap<String, String> params) {
+        String usernameOrEmail = "", oldPassword = "", newPassword = "";
+        if(params.getFirst("username") != null && !params.getFirst("username").equals("")){
+            usernameOrEmail = params.getFirst("username");
+        }else if(params.getFirst("email") != null && !params.getFirst("email").equals("")){
+            usernameOrEmail = params.getFirst("email");
+        }else{
+            return new ResponseEntity("User Account id not found; please provide user's username or email", HttpStatus.BAD_REQUEST);
+        }
+
         return null;
     }
 
