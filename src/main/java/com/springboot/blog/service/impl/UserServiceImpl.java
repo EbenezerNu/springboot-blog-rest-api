@@ -43,6 +43,12 @@ public class UserServiceImpl implements UserService {
             return new ResponseEntity("User Account id not found; please provide user's username or email", HttpStatus.BAD_REQUEST);
         }
 
+        Optional<User> user = userRepository.findByUsernameOrEmail(usernameOrEmail);
+
+        if(user.isEmpty()){
+            return new ResponseEntity("User Account does not exist", HttpStatus.BAD_REQUEST);
+        }
+
         return null;
     }
 
