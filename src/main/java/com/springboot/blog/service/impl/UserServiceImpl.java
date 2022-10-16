@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
         }
         
         if(!user.get().getPassword().equals(passwordEncoder.encode(oldPassword))){
-            return new ResponseEntity("Invalid user account Password!!", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity("Invalid user account password!!", HttpStatus.BAD_REQUEST);
         }
 
         else if(params.getFirst("new password") != null && !params.getFirst("new password").equals("") && params.getFirst("new password").length() > 7){
@@ -74,9 +74,11 @@ public class UserServiceImpl implements UserService {
         }else{
             return new ResponseEntity("User account new password was not provided, or does not meet required standard; provide new password or length at least 8", HttpStatus.BAD_REQUEST);
         }
+        User editedUser = user.get();
+        editedUser.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(editedUser);
 
-
-        return null;
+        return new ResponseEntity("User account password has been changed successfully!!", HttpStatus.valueOf(201));
     }
 
 
