@@ -6,8 +6,10 @@ import com.springboot.blog.payload.UserDto;
 import com.springboot.blog.repository.UserRepository;
 import com.springboot.blog.service.UserService;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 
@@ -19,6 +21,12 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     private final ModelMapper mapper;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    
+    
 
     public UserServiceImpl(UserRepository userRepository, ModelMapper mapper) {
         this.userRepository = userRepository;
@@ -56,7 +64,10 @@ public class UserServiceImpl implements UserService {
         }else{
             return new ResponseEntity("User Account Password not provided!!", HttpStatus.BAD_REQUEST);
         }
-
+        
+        if(!user.get().getPassword().equals((passwordEncoder.encode(oldPassword)))){
+            return new ResponseEntity("Invalid User Account Password!!", HttpStatus.BAD_REQUEST);
+        }
 
         return null;
     }
