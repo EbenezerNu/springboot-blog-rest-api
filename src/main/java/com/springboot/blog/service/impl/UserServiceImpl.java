@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
             return new ResponseEntity("Invalid user account password!!", HttpStatus.BAD_REQUEST);
         }
 
-        else if(params.getFirst("new password") != null && !params.getFirst("new password").equals("") && params.getFirst("new password").length() > 7){
+        if(params.getFirst("new password") != null && !params.getFirst("new password").equals("") && params.getFirst("new password").length() > 7){
             newPassword = params.getFirst("new password");
         }else{
             return new ResponseEntity("User account new password was not provided, or does not meet required standard; provide new password or length at least 8", HttpStatus.BAD_REQUEST);
