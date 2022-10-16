@@ -48,13 +48,13 @@ public class UserServiceImpl implements UserService {
         }else if(params.getFirst("email") != null && !params.getFirst("email").equals("")){
             usernameOrEmail = params.getFirst("email");
         }else{
-            return new ResponseEntity("User Account id not found; please provide user's username or email", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity("User account id not found; please provide user's username or email", HttpStatus.BAD_REQUEST);
         }
 
         Optional<User> user = userRepository.findByUsernameOrEmail(usernameOrEmail);
 
         if(user.isEmpty()){
-            return new ResponseEntity("User Account does not exist", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity("User account does not exist", HttpStatus.BAD_REQUEST);
         }
 
         if(params.getFirst("old password") != null && !params.getFirst("old password").equals("")){
@@ -62,12 +62,19 @@ public class UserServiceImpl implements UserService {
         }else if(params.getFirst("password") != null && !params.getFirst("password").equals("")){
             oldPassword = params.getFirst("password");
         }else{
-            return new ResponseEntity("User Account Password not provided!!", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity("User account password not provided!!", HttpStatus.BAD_REQUEST);
         }
         
-        if(!user.get().getPassword().equals((passwordEncoder.encode(oldPassword)))){
-            return new ResponseEntity("Invalid User Account Password!!", HttpStatus.BAD_REQUEST);
+        if(!user.get().getPassword().equals(passwordEncoder.encode(oldPassword))){
+            return new ResponseEntity("Invalid user account Password!!", HttpStatus.BAD_REQUEST);
         }
+
+        else if(params.getFirst("new password") != null && !params.getFirst("new password").equals("") && params.getFirst("new password").length() > 7){
+            newPassword = params.getFirst("new password");
+        }else{
+            return new ResponseEntity("User account new password was not provided, or does not meet required standard; provide new password or length at least 8", HttpStatus.BAD_REQUEST);
+        }
+
 
         return null;
     }
