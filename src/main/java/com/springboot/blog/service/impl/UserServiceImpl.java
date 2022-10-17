@@ -1,6 +1,7 @@
 package com.springboot.blog.service.impl;
 
 import com.springboot.blog.entity.User;
+import com.springboot.blog.exception.BlogAPIException;
 import com.springboot.blog.payload.SignUpDto;
 import com.springboot.blog.payload.UserDto;
 import com.springboot.blog.repository.UserRepository;
@@ -42,19 +43,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity changePassword(MultiValueMap<String, String> params) {
+        User editedUser = validateUser(params);
+        editedUser.setPassword(passwordEncoder.encode(params.getFirst("new password")));
+        userRepository.save(editedUser);
+
+        return new ResponseEntity("User account password has been changed successfully!!", HttpStatus.valueOf(201));
+    }
+
+    public User validateUser(MultiValueMap<String, String> params) {
+
         String usernameOrEmail = "", oldPassword = "", newPassword = "";
         if(params.getFirst("username") != null && !params.getFirst("username").equals("")){
             usernameOrEmail = params.getFirst("username");
         }else if(params.getFirst("email") != null && !params.getFirst("email").equals("")){
             usernameOrEmail = params.getFirst("email");
         }else{
-            return new ResponseEntity("User account id not found; please provide user's username or email", HttpStatus.BAD_REQUEST);
+            throw new BlogAPIException("User account id not found; please provide user's username or email", HttpStatus.BAD_REQUEST);
         }
 
         Optional<User> user = userRepository.findByUsernameOrEmail(usernameOrEmail);
 
         if(user.isEmpty()){
-            return new ResponseEntity("User account does not exist", HttpStatus.BAD_REQUEST);
+            throw new BlogAPIException("User account does not exist", HttpStatus.BAD_REQUEST);
         }
 
         if(params.getFirst("old password") != null && !params.getFirst("old password").equals("")){
@@ -62,24 +72,20 @@ public class UserServiceImpl implements UserService {
         }else if(params.getFirst("password") != null && !params.getFirst("password").equals("")){
             oldPassword = params.getFirst("password");
         }else{
-            return new ResponseEntity("User account password not provided!!", HttpStatus.BAD_REQUEST);
+            throw new BlogAPIException("User account password not provided!!", HttpStatus.BAD_REQUEST);
         }
-        
+
         if(!user.get().getPassword().equals(passwordEncoder.encode(oldPassword))){
-            return new ResponseEntity("Invalid user account password!!", HttpStatus.BAD_REQUEST);
+            throw new BlogAPIException("Invalid user account password!!", HttpStatus.BAD_REQUEST);
         }
 
-        if(params.getFirst("new password") != null && !params.getFirst("new password").equals("") && params.getFirst("new password").length() > 7){
-            newPassword = params.getFirst("new password");
-        }else{
-            return new ResponseEntity("User account new password was not provided, or does not meet required standard; provide new password or length at least 8", HttpStatus.BAD_REQUEST);
+        if(params.getFirst("new password") == null || params.getFirst("new password").equals("") || params.getFirst("new password").length() < 8){
+            throw new BlogAPIException("User account new password was not provided, or does not meet required standard; provide new password or length at least 8", HttpStatus.BAD_REQUEST);
         }
-        User editedUser = user.get();
-        editedUser.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(editedUser);
 
-        return new ResponseEntity("User account password has been changed successfully!!", HttpStatus.valueOf(201));
+        return user.get();
     }
+
 
 
 }
