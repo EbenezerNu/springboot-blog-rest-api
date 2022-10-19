@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity changePassword(MultiValueMap<String, String> params) {
         User editedUser = validateUser(params);
-        editedUser.setPassword(passwordEncoder.encode(params.getFirst("new password")));
+        editedUser.setPassword(passwordEncoder.encode(params.getFirst("newPassword")));
         userRepository.save(editedUser);
 
         return new ResponseEntity("User account password has been changed successfully!!", HttpStatus.valueOf(201));
@@ -67,8 +67,8 @@ public class UserServiceImpl implements UserService {
             throw new BlogAPIException("User account does not exist", HttpStatus.BAD_REQUEST);
         }
 
-        if(params.getFirst("old password") != null && !params.getFirst("old password").equals("")){
-            oldPassword = params.getFirst("old password");
+        if(params.getFirst("oldPassword") != null && !params.getFirst("oldPassword").equals("")){
+            oldPassword = params.getFirst("oldPassword");
         }else if(params.getFirst("password") != null && !params.getFirst("password").equals("")){
             oldPassword = params.getFirst("password");
         }else{
@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
             throw new BlogAPIException("Invalid user account password!!", HttpStatus.BAD_REQUEST);
         }
 
-        if(params.getFirst("new password") == null || params.getFirst("new password").equals("") || params.getFirst("new password").length() < 8){
+        if(params.getFirst("newPassword") == null || params.getFirst("newPassword").equals("") || params.getFirst("newPassword").length() < 8){
             throw new BlogAPIException("User account new password was not provided, or does not meet required standard; provide new password or length at least 8", HttpStatus.BAD_REQUEST);
         }
 

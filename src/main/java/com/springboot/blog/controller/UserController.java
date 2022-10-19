@@ -9,10 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -39,7 +36,7 @@ public class UserController {
         return new ResponseEntity<>(userService.createUser(signUpDto), HttpStatus.CREATED);
     }
 
-    @PostMapping("/change-password")
+    @PatchMapping("/change-password")
     public ResponseEntity<String> changePassword(@RequestBody MultiValueMap<String,String> params){
         log.info("inside change Password --> \n {}", params);
 //        signUpDto.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
