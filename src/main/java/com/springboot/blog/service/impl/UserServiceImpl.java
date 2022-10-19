@@ -76,12 +76,12 @@ public class UserServiceImpl implements UserService {
         }
 
         if(params.getOldPassword() != null && !params.getOldPassword().equals("")){
-            oldPassword = passwordEncoder.encode(params.getOldPassword());
+            oldPassword = params.getOldPassword();
         }else{
             throw new BlogAPIException("User account password not provided!!", HttpStatus.BAD_REQUEST);
         }
 
-        Authentication authentication =  authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.get().getUsername(), oldPassword));
+        Authentication authentication =  authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.get().getEmail(), oldPassword));
 //        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         if(!authentication.isAuthenticated()){
