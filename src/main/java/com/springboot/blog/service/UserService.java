@@ -1,5 +1,6 @@
 package com.springboot.blog.service;
 
+import com.springboot.blog.payload.ChangePasswordDto;
 import com.springboot.blog.payload.SignUpDto;
 import com.springboot.blog.payload.UserDto;
 import org.springframework.http.ResponseEntity;
@@ -9,5 +10,5 @@ public interface UserService {
 
     UserDto createUser (SignUpDto signUpDto);
 
-    ResponseEntity changePassword (MultiValueMap<String, String> params);
+    ResponseEntity changePassword (ChangePasswordDto params);
 }

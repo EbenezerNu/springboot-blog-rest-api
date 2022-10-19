@@ -1,6 +1,7 @@
 package com.springboot.blog.controller;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.springboot.blog.payload.ChangePasswordDto;
 import com.springboot.blog.payload.SignUpDto;
 import com.springboot.blog.payload.UserDto;
 import com.springboot.blog.service.UserService;
@@ -40,7 +41,7 @@ public class UserController {
     }
 
     @PostMapping(value="/change-password", consumes={"*/*"})
-    public ResponseEntity<String> changePassword(@RequestBody MultiValueMap<String,String> params){
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordDto params){
         log.info("inside change Password --> \n {}", params);
 //        signUpDto.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
 
