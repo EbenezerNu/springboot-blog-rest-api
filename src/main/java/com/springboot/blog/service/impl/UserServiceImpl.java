@@ -11,6 +11,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -27,6 +32,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
     
     
 
@@ -53,7 +60,7 @@ public class UserServiceImpl implements UserService {
 
     public User validateUser(ChangePasswordDto params) {
 
-        String usernameOrEmail = "", oldPassword = "", newPassword = "";
+        String usernameOrEmail = "", oldPassword = "";
         if(params.getUsername() != null && !params.getUsername().equals("")){
             usernameOrEmail = params.getUsername();
         }else if(params.getEmail() != null && !params.getEmail().equals("")){
@@ -74,7 +81,10 @@ public class UserServiceImpl implements UserService {
             throw new BlogAPIException("User account password not provided!!", HttpStatus.BAD_REQUEST);
         }
 
-        if(!(passwordEncoder.matches(user.get().getPassword(), oldPassword))){
+        Authentication authentication =  authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.get().getUsername(), oldPassword));
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        if(!authentication.isAuthenticated()){
             throw new BlogAPIException("Invalid user account password!!", HttpStatus.BAD_REQUEST);
         }
 
