@@ -54,10 +54,10 @@ public class UserServiceImpl implements UserService {
     public User validateUser(ChangePasswordDto params) {
 
         String usernameOrEmail = "", oldPassword = "", newPassword = "";
-        if(params.getFirst("username") != null && !params.getFirst("username").equals("")){
-            usernameOrEmail = params.getFirst("username");
-        }else if(params.getFirst("email") != null && !params.getFirst("email").equals("")){
-            usernameOrEmail = params.getFirst("email");
+        if(params.getUsername() != null && !params.getUsername().equals("")){
+            usernameOrEmail = params.getUsername();
+        }else if(params.getEmail() != null && !params.getEmail().equals("")){
+            usernameOrEmail = params.getEmail();
         }else{
             throw new BlogAPIException("User account id not found; please provide user's username or email", HttpStatus.BAD_REQUEST);
         }
@@ -68,10 +68,8 @@ public class UserServiceImpl implements UserService {
             throw new BlogAPIException("User account does not exist", HttpStatus.BAD_REQUEST);
         }
 
-        if(params.getFirst("oldPassword") != null && !params.getFirst("oldPassword").equals("")){
-            oldPassword = params.getFirst("oldPassword");
-        }else if(params.getFirst("password") != null && !params.getFirst("password").equals("")){
-            oldPassword = params.getFirst("password");
+        if(params.getOldPassword() != null && !params.getOldPassword().equals("")){
+            oldPassword = params.getOldPassword();
         }else{
             throw new BlogAPIException("User account password not provided!!", HttpStatus.BAD_REQUEST);
         }
@@ -80,7 +78,7 @@ public class UserServiceImpl implements UserService {
             throw new BlogAPIException("Invalid user account password!!", HttpStatus.BAD_REQUEST);
         }
 
-        if(params.getFirst("newPassword") == null || params.getFirst("newPassword").equals("") || params.getFirst("newPassword").length() < 8){
+        if(params.getNewPassword() == null || params.getNewPassword().equals("") || params.getNewPassword().length() < 8){
             throw new BlogAPIException("User account new password was not provided, or does not meet required standard; provide new password or length at least 8", HttpStatus.BAD_REQUEST);
         }
 
