@@ -69,12 +69,12 @@ public class UserServiceImpl implements UserService {
         }
 
         if(params.getOldPassword() != null && !params.getOldPassword().equals("")){
-            oldPassword = params.getOldPassword();
+            oldPassword = passwordEncoder.encode(params.getOldPassword());
         }else{
             throw new BlogAPIException("User account password not provided!!", HttpStatus.BAD_REQUEST);
         }
 
-        if(!user.get().getPassword().equals(passwordEncoder.encode(oldPassword))){
+        if(!(passwordEncoder.matches(user.get().getPassword(), oldPassword))){
             throw new BlogAPIException("Invalid user account password!!", HttpStatus.BAD_REQUEST);
         }
 

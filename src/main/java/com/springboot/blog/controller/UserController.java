@@ -40,7 +40,7 @@ public class UserController {
         return new ResponseEntity<>(userService.createUser(signUpDto), HttpStatus.CREATED);
     }
 
-    @PostMapping(value="/change-password", consumes={"*/*"})
+    @PostMapping("/change-password")
     public ResponseEntity<String> changePassword(@RequestBody ChangePasswordDto params){
         log.info("inside change Password --> \n {}", params);
 //        signUpDto.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
