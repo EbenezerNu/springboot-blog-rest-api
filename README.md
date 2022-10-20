@@ -12,3 +12,13 @@ Likewise, in displaying posts and comments, there is a version (in the URL) that
 
 
 I have also created a versioning on the endpoints to display posts, with their comments, each with their replies, recursively.
+
+
+#### Functionalities
+The project makes use or URL versioning; but also have `/api` as the context path, before the versions.
+Examples: `/api/v1/posts`
+
+#### User Routes
+Below are the various endpoints concerning user model:
+
+- 
